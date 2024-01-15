@@ -1,0 +1,4 @@
+crewai
+langchain
+duckduckgo-search
+langchain-community
