@@ -2,3 +2,4 @@ crewai
 langchain
 duckduckgo-search
 langchain-community
+beautifulsoup4
