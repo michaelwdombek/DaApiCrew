@@ -7,63 +7,13 @@ from langchain.docstore.document import Document
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
 from typing import List
+from tools.swagger_backend import SwaggerAPI
 
 
 WORKING_DIR = "./workdir"
 
 api_yaml = f"{WORKING_DIR}/api.yaml"
 list_of_loaded_docs = []
-
-
-def _load_swagger_file(uri: str) -> dict:
-    """Load a swagger file and return it as a dict"""
-    if not uri.startswith(WORKING_DIR):
-    # if the filepath doest not start with the working directory, then just use workindirectory/filename
-        uri = WORKING_DIR + "/" + path.basename(uri)
-    with open(uri) as file:
-        return yaml.load(file, Loader=yaml.FullLoader)
-
-
-RAW_SWAGGER = _load_swagger_file(api_yaml)
-
-
-def _document_builder(documents: list, content: dict, api_endpoint: bool = False):
-    for key, value in content.items():
-        if isinstance(value, dict) and key == "paths":
-            _document_builder(documents, value, api_endpoint=True)
-        else:
-            metadata = {
-                "endpoint": api_endpoint,
-                "source": api_yaml,
-                "name": key,
-                "type": "swagger",
-                "api_version": RAW_SWAGGER["info"]["version"],
-                "api_name": RAW_SWAGGER["info"]["title"],
-                "api_description": RAW_SWAGGER["info"]["description"]}
-            documents.append(
-                Document(
-                    metadata=metadata,
-                    page_content=str(content[key])))
-    return documents
-
-
-CHROMA_DB = Chroma.from_documents(
-    _document_builder(
-        documents=[],
-        content=RAW_SWAGGER), OpenAIEmbeddings())
-
-
-
-@tool("question api documentation for information")
-def question_api_info(data: str) -> List[any]:
-    """Useful to query the api documentation for information. The Input should be an easy-to-understand question.
-        For example: What endpoint lists all projects?"""
-    top_k = 3
-    logging.info(f"query_api_info: {data}")
-    #embedding_vector = OpenAIEmbeddings().embed_query(data)
-    #response_docs = CHROMA_DB.similarity_search_by_vector(embedding_vector, top_k)
-    response_docs = CHROMA_DB.similarity_search(data, top_k)
-    return [doc.page_content for doc in response_docs]
 
 @tool("open a file and read it")
 def read_file(file_path):

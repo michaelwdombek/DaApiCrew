@@ -2,4 +2,5 @@ crewai
 langchain
 duckduckgo-search
 langchain-community
-beautifulsoup4
+prance
+openapi-spec-validator
