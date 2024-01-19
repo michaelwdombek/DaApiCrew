@@ -18,7 +18,7 @@ class SwaggerAPI:
             self.spec = ResolvingParser(url=self.api_path, strict=False)
         else:
             raise ValueError("Either swagger_yaml or api_path must be provided")
-        self.endpoints = self.spec["specification"]["paths"]
+        self.endpoints = self.spec.specification["paths"]
 
     def get_endpoint(self, path) -> Dict[str, Dict[any, any]]:
         """
@@ -32,7 +32,10 @@ class SwaggerAPI:
         Returns:
             dict: Endpoint as dict
         """
-        return {self.endpoints[path]: self.endpoints[path].values()}
+        return {path: self.endpoints.get(path)}
+
+        #return {self.endpoints[path].keys()
+                #: self.endpoints[path]}#: self.endpoints[path].values()}
 
     def endpoint_search(self, query) -> List[str]:
         """
@@ -50,7 +53,7 @@ class SwaggerAPI:
         """
         if not query.startswith("/"):
             query = "/" + query
-        return [endpoint for endpoint in self.endpoints if endpoint.startswith(query).keys()]
+        return [endpoint for endpoint in self.endpoints.keys() if endpoint.startswith(query)]
 
     def all_endpoints(self) -> List[str]:
         """

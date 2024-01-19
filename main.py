@@ -10,10 +10,35 @@ from typing import List
 from tools.swagger_backend import SwaggerAPI
 
 
+# Setting up basics
 WORKING_DIR = "./workdir"
 
 api_yaml = f"{WORKING_DIR}/api.yaml"
-list_of_loaded_docs = []
+
+# Initializing tools
+swagger_api = SwaggerAPI(api_path=api_yaml)
+
+
+@tool("search for an endpoint")
+def search_endpoint(query):
+    """Useful for when you need to find an endpoint in the api
+    The input should be the endpoint path or the beginning of the endpoint path. 
+    ie '/project' will return all endpoints that start with '/project' including '/project/{project_id}' etc"""
+    return swagger_api.endpoint_search(query)
+
+@tool("get endpoint info")
+def detailed_api_info(endpoint):
+    """Useful for when you need to get detailed information about an endpoint
+    The input must be the full endpoint path ie '/project/{project_id}', will return the endpoint as well as methods and parameters"""
+    return swagger_api.get_endpoint(endpoint)
+
+
+
+
+
+
+
+
 
 @tool("open a file and read it")
 def read_file(file_path):
@@ -34,7 +59,7 @@ def _build_tasks(endpoints: list, agent: Agent):
         tasks.append(
             Task(
                 name=f"Analyze {endpoint}",
-                description=f"""Analyze the {endpoint} endpoint and provide a markdown of its capabilities.""",
+                description=f"""Analyze the {endpoint} endpoint and provide a short description what the endpoint does and how it can be used. Provide it in a markdown file. with the following structure, Name, Description, Parameters.""",
                 agent=agent,
                 tools=[question_api_info, read_file]
             )
@@ -45,7 +70,7 @@ def _build_tasks(endpoints: list, agent: Agent):
 def main():
 
     # initialize tools
-    api_info = question_api_info
+
     search_tool = DuckDuckGoSearchRun()
 
     researcher = Agent(
@@ -58,7 +83,7 @@ def main():
     actionable insights.""",
         verbose=True,
         # Passing human tools to the agent
-        tools=[api_info])
+        tools=[])
 
     # Create a task
     #task = Task(
