@@ -1,0 +1,1 @@
+'# /projects\n\n## GET\n\n**Description:** Get a list of projects.\n\n**Responses:** 200, returns a list of projects.\n\n## POST\n\n**Description:** Create a new project. Requires a JSON object with the following properties: name (string), alert (boolean), alert_chat (string), max_parallel_tasks (integer).\n\n**Responses:** 201, returns the created project.'
