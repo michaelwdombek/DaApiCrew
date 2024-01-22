@@ -28,7 +28,7 @@ def read_file(file_name: str, custom_dir: str = "") -> str:
 @tool("write to a file")
 def write_file(file_name_content: str, custom_dir: str = "") -> str:
     """writes the content into the filename provided
-    inputs are the filename|content
+    inputs are the filename|+|content
     ie
     'test.txt'|+|'this is a test' will create a file called test.txt with the content 'this is a test'
     'app.py'|+|'print("hello world")' will create a file called app.py with the content 'print("hello world")'
